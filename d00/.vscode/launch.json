@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "main",
+            "type": "go",
+            "request": "launch",
+            "console": "internalConsole",
+            "mode": "auto",
+            "program": "${workspaceFolder}/main.go",
+        }
+    ]
+}
