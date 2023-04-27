@@ -8,8 +8,20 @@ import (
 	"strings"
 )
 
-type DBReader interface {
-	Read()
+type ingredient struct {
+	Name  string `json:"ingredient_name" xml:"itemname"`
+	Count string `json:"ingredient_count" xml:"itemcount"`
+	Unit  string `json:"ingredient_unit" xml:"itemunit"`
+}
+
+type cake struct {
+	Name        string       `json:"name" xml:"name"`
+	Time        string       `json:"time" xml:"stovetime"`
+	Ingredients []ingredient `json:"ingredients" xml:"ingredients>item"`
+}
+
+type recipes struct {
+	Cake []cake `json:"cake" xml:"cake"`
 }
 
 func parseArgs() (string, bool) {
@@ -29,22 +41,6 @@ func parseArgs() (string, bool) {
 		fmt.Println("Wrong argument")
 		return "", true
 	}
-}
-
-type ingredient struct {
-	Name  string `json:"ingredient_name" xml:"itemname"`
-	Count string `json:"ingredient_count" xml:"itemcount"`
-	Unit  string `json:"ingredient_unit" xml:"itemunit"`
-}
-
-type cake struct {
-	Name        string       `json:"name" xml:"name"`
-	Time        string       `json:"time" xml:"stovetime"`
-	Ingredients []ingredient `json:"ingredients" xml:"ingredients"`
-}
-
-type recipes struct {
-	Cake []cake `json:"cake" xml:"cake"`
 }
 
 func readJson(filePath string) {
