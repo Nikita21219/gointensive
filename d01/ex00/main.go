@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"os"
 	"strings"
@@ -31,73 +32,61 @@ func parseArgs() (string, bool) {
 }
 
 type ingredient struct {
-	Name  string `json:"ingredient_name"`
-	Count string `json:"ingredient_count"`
-	Unit  string `json:"ingredient_unit"`
+	Name  string `json:"ingredient_name" xml:"itemname"`
+	Count string `json:"ingredient_count" xml:"itemcount"`
+	Unit  string `json:"ingredient_unit" xml:"itemunit"`
 }
 
 type cake struct {
-	Name        string       `json:"name"`
-	Time        string       `json:"time"`
-	Ingredients []ingredient `json:"ingredients"`
+	Name        string       `json:"name" xml:"name"`
+	Time        string       `json:"time" xml:"stovetime"`
+	Ingredients []ingredient `json:"ingredients" xml:"ingredients"`
 }
 
-type obj struct {
-	Cake []cake `json:"cake"`
+type recipes struct {
+	Cake []cake `json:"cake" xml:"cake"`
 }
 
-func readJson() {
-	b := []byte(`{
-    "cake": [
-      {
-        "name": "Red Velvet Strawberry Cake",
-        "time": "45 min",
-        "ingredients": [
-          {
-            "ingredient_name": "Flour",
-            "ingredient_count": "2",
-            "ingredient_unit": "mugs"
-          },
-          {
-            "ingredient_name": "Strawberries",
-            "ingredient_count": "7"
-          },
-          {
-            "ingredient_name": "Vanilla extract",
-            "ingredient_count": "2.5",
-            "ingredient_unit": "tablespoons"
-          }
-        ]
-      },
-      {
-        "name": "Blueberry Muffin Cake",
-        "time": "30 min",
-        "ingredients": [
-          {
-            "ingredient_name": "Brown sugar",
-            "ingredient_count": "1",
-            "ingredient_unit": "mug"
-          },
-          {
-            "ingredient_name": "Blueberries",
-            "ingredient_count": "1",
-            "ingredient_unit": "mug"
-          }
-        ]
-      }
-    ]
-	}`)
-	var o obj
+func readJson(filePath string) {
+	b := getDataFromFile(filePath)
+	var r recipes
 
 	if !json.Valid(b) {
-		fmt.Println("NOT VALID!!!!!!!")
-		return // TODO error?
+		fmt.Println("Not valid JSON")
+		os.Exit(1)
 	}
-	err := json.Unmarshal(b, &o)
+	err := json.Unmarshal(b, &r)
 	if err != nil {
 		fmt.Println("Error!")
 	}
-	fmt.Println(o)
+	printXml(r)
+}
+
+func getDataFromFile(path string) []byte {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Println("File does not exists")
+		os.Exit(1)
+	}
+	return data
+}
+
+func printJson(r recipes) {
+	data, err := json.MarshalIndent(r, "", "    ")
+	if err != nil {
+		fmt.Println("Fatal error")
+		os.Exit(1)
+	}
+	fmt.Println(string(data))
+}
+
+func printXml(r recipes) {
+	data, err := xml.MarshalIndent(r, "", "    ")
+	if err != nil {
+		fmt.Println("Fatal error")
+		os.Exit(1)
+	}
+	fmt.Println(string(data))
 }
 
 func main() {
@@ -109,6 +98,6 @@ func main() {
 	case "xml":
 		fmt.Println("Test")
 	case "json":
-		readJson()
+		readJson(filePath)
 	}
 }
