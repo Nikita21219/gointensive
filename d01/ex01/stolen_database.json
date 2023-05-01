@@ -1,0 +1,72 @@
+{
+    "cake": [
+        {
+            "name": "Red Velvet Strawberry Cake",
+            "time": "45 min",
+            "ingredients": [
+                {
+                    "ingredient_name": "Flour",
+                    "ingredient_count": "3",
+                    "ingredient_unit": "mugs"
+                },
+                {
+                    "ingredient_name": "Coffee beans",
+                    "ingredient_count": "1.5",
+                    "ingredient_unit": "tablespoons"
+                },
+                {
+                    "ingredient_name": "Strawberries",
+                    "ingredient_count": "999",
+                    "ingredient_unit": ""
+                },
+                {
+                    "ingredient_name": "NEW INGREDIENT",
+                    "ingredient_count": "999",
+                    "ingredient_unit": "cup"
+                }
+            ]
+        },
+        {
+            "name": "Moonshine Muffin",
+            "time": "30 min",
+            "ingredients": [
+                {
+                    "ingredient_name": "Baking powder",
+                    "ingredient_count": "3",
+                    "ingredient_unit": "teaspoons"
+                },
+                {
+                    "ingredient_name": "Brown sugar",
+                    "ingredient_count": "0.5",
+                    "ingredient_unit": "cup"
+                },
+                {
+                    "ingredient_name": "Blueberries",
+                    "ingredient_count": "1",
+                    "ingredient_unit": "cup"
+                }
+            ]
+        },
+        {
+            "name": "NEW CAKE",
+            "time": "30 min",
+            "ingredients": [
+                {
+                    "ingredient_name": "Baking powder",
+                    "ingredient_count": "3",
+                    "ingredient_unit": "teaspoons"
+                },
+                {
+                    "ingredient_name": "Brown sugar",
+                    "ingredient_count": "0.5",
+                    "ingredient_unit": "cup"
+                },
+                {
+                    "ingredient_name": "Blueberries",
+                    "ingredient_count": "1",
+                    "ingredient_unit": "cup"
+                }
+            ]
+        }
+    ]
+}
