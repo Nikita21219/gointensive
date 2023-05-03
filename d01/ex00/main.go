@@ -8,20 +8,54 @@ import (
 	"strings"
 )
 
-type ingredient struct {
+type DBReader interface {
+	Read(filePath string) (Recipes, error)
+}
+
+type JsonReader struct{}
+
+type XmlReader struct{}
+
+type Ingredient struct {
 	Name  string `json:"ingredient_name" xml:"itemname"`
 	Count string `json:"ingredient_count" xml:"itemcount"`
 	Unit  string `json:"ingredient_unit" xml:"itemunit"`
 }
 
-type cake struct {
+type Cake struct {
 	Name        string       `json:"name" xml:"name"`
 	Time        string       `json:"time" xml:"stovetime"`
-	Ingredients []ingredient `json:"ingredients" xml:"ingredients>item"`
+	Ingredients []Ingredient `json:"ingredients" xml:"ingredients>item"`
 }
 
-type recipes struct {
-	Cake []cake `json:"cake" xml:"cake"`
+type Recipes struct {
+	Cake []Cake `json:"cake" xml:"cake"`
+}
+
+func (j *JsonReader) Read(filePath string) (Recipes, error) {
+	b := getDataFromFile(filePath)
+	var r Recipes
+
+	if !json.Valid(b) {
+		err := fmt.Errorf("Not valid JSON")
+		return r, err
+	}
+	err := json.Unmarshal(b, &r)
+	if err != nil {
+		return r, err
+	}
+	return r, nil
+}
+
+func (j *XmlReader) Read(filePath string) (Recipes, error) {
+	b := getDataFromFile(filePath)
+	var r Recipes
+
+	err := xml.Unmarshal(b, &r)
+	if err != nil {
+		return r, err
+	}
+	return r, nil
 }
 
 func parseArgs() (string, bool) {
@@ -43,21 +77,6 @@ func parseArgs() (string, bool) {
 	}
 }
 
-func readJson(filePath string) {
-	b := getDataFromFile(filePath)
-	var r recipes
-
-	if !json.Valid(b) {
-		fmt.Println("Not valid JSON")
-		os.Exit(1)
-	}
-	err := json.Unmarshal(b, &r)
-	if err != nil {
-		fmt.Println("Error!")
-	}
-	printXml(r)
-}
-
 func getDataFromFile(path string) []byte {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -67,7 +86,16 @@ func getDataFromFile(path string) []byte {
 	return data
 }
 
-func printJson(r recipes) {
+func readDB(filePath string, reader DBReader) Recipes {
+	res, err := reader.Read(filePath)
+	if err != nil {
+		fmt.Println("Error reading")
+		os.Exit(1)
+	}
+	return res
+}
+
+func printJson(r Recipes) {
 	data, err := json.MarshalIndent(r, "", "    ")
 	if err != nil {
 		fmt.Println("Fatal error")
@@ -76,7 +104,7 @@ func printJson(r recipes) {
 	fmt.Println(string(data))
 }
 
-func printXml(r recipes) {
+func printXml(r Recipes) {
 	data, err := xml.MarshalIndent(r, "", "    ")
 	if err != nil {
 		fmt.Println("Fatal error")
@@ -92,8 +120,10 @@ func main() {
 	}
 	switch strings.Split(filePath, ".")[1] {
 	case "xml":
-		fmt.Println("Test")
+		r := readDB(filePath, new(XmlReader))
+		printJson(r)
 	case "json":
-		readJson(filePath)
+		r := readDB(filePath, new(JsonReader))
+		printXml(r)
 	}
 }
