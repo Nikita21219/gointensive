@@ -6,9 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0a289d9e-2279-48d5-b10a-6e4a9b25433d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/d01/ex00/1.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/d01/ex00/1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/d01/ex00/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/d01/ex00/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +47,7 @@
     "WebServerToolWindowFactoryState": "false",
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
-    "last_opened_file_path": "/Users/a1/Downloads/IT/golang/gointensive/d01",
+    "last_opened_file_path": "/Users/bclarind/Downloads/gointensive/d02/ex01",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "settings.editor.selected.configurable": "editor.preferences.fonts.default"
@@ -58,11 +55,13 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/d02/ex01" />
+      <recent name="$PROJECT_DIR$/d02" />
       <recent name="$PROJECT_DIR$/d01" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Build.d02ex00">
+  <component name="RunManager" selected="Go Build.d02ex01">
     <configuration name="d01ex00" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="gointensive" />
       <working_directory value="$PROJECT_DIR$/d01/ex00" />
@@ -103,11 +102,22 @@
       <output_directory value="$PROJECT_DIR$/../go_out" />
       <method v="2" />
     </configuration>
+    <configuration name="d02ex01" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="gointensive" />
+      <working_directory value="$PROJECT_DIR$/d02/ex01" />
+      <parameters value="input.txt -m" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/d02/ex01/main.go" />
+      <output_directory value="$PROJECT_DIR$/../go_out" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Go Build.d01ex00" />
       <item itemvalue="Go Build.d01ex01" />
       <item itemvalue="Go Build.d01ex02" />
       <item itemvalue="Go Build.d02ex00" />
+      <item itemvalue="Go Build.d02ex01" />
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
