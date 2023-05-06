@@ -1,19 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"log"
 	"os"
 	"strings"
-)
-
-type WC int
-
-const (
-	Lines WC = iota + 1
-	Chars
-	Words
 )
 
 func parseArgs() ([]string, string) {
@@ -40,20 +33,14 @@ func parseArgs() ([]string, string) {
 	return paths, flag_
 }
 
-func countWords(n int, data []byte) int {
-	result := 0
-	str := string(data[:n])
-	lines := strings.Split(str, "\n")
-	fmt.Println("lines: ", lines)
-	for _, line := range lines {
-		words := strings.Split(line, " ")
-		for _, word := range words {
-			if word != "" {
-				result++
-			}
-		}
+func countWords(file *os.File) int {
+	count := 0
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanWords)
+	for scanner.Scan() {
+		count++
 	}
-	return result
+	return count
 }
 
 func readFile(path string, flag_ string) (string, error) {
@@ -64,63 +51,34 @@ func readFile(path string, flag_ string) (string, error) {
 		return "", err
 	}
 
-	data := make([]byte, 5)
-	for {
-		n, err := file.Read(data)
-		if err == io.EOF {
-			break
-		}
+	if flag_ == "-w" {
+		result += countWords(file)
+	} else {
+		data := make([]byte, 2048)
 
-		if flag_ == "-w" {
-			result += countWords(n, data)
-		} else if flag_ == "-l" {
-			result += strings.Count(string(data), "\n")
-		} else if flag_ == "-m" {
-			result += n
+		for {
+			n, err := file.Read(data)
+			if err == io.EOF {
+				break
+			}
+			if flag_ == "-l" {
+				result += strings.Count(string(data), "\n")
+			} else if flag_ == "-m" {
+				result += n
+			}
 		}
 	}
 
-	//scanner := bufio.NewScanner(file)
-	//for scanner.Scan() {
-	//	if flag_ == "-w" {
-	//		result += countWords(scanner.Text())
-	//	} else if flag_ == "-l" {
-	//		result += 1
-	//	} else if flag_ == "-m" {
-	//		result += len(scanner.Text()) + 1
-	//	}
-	//}
-	//
-	//if err := scanner.Err(); err != nil {
-	//	return "", err
-	//}
-
-	err = file.Close()
-	return fmt.Sprintf("%d\t%s", result, path), err
+	return fmt.Sprintf("%d\t%s", result, path), file.Close()
 }
 
 func main() {
-
-	//data := []byte("Hello Bold!")
-	//file, err := os.Create("input3.txt")
-	//if err != nil {
-	//	fmt.Println("Unable to create file:", err)
-	//	os.Exit(1)
-	//}
-	//defer file.Close()
-	//for i := 0; i < 1000000; i++ {
-	//	file.Write(data)
-	//}
-	//
-	//fmt.Println("Done.")
-
 	paths, flag_ := parseArgs()
-	//fmt.Println("Flag:", flag_)
-	//fmt.Println("Files:", paths)
 	fmt.Println()
 
 	for _, path := range paths {
-		if result, err := readFile(path, flag_); err != nil {
+		result, err := readFile(path, flag_)
+		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
 			fmt.Println(result)
