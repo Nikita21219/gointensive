@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 )
 
 func parseArgs() ([]string, string) {
@@ -75,13 +76,22 @@ func readFile(path string, flag_ string) (string, error) {
 func main() {
 	paths, flag_ := parseArgs()
 	fmt.Println()
+	var wg sync.WaitGroup
 
 	for _, path := range paths {
-		result, err := readFile(path, flag_)
-		if err != nil {
-			fmt.Println("Error:", err)
-		} else {
-			fmt.Println(result)
-		}
+		wg.Add(1)
+
+		path := path
+		go func() {
+			defer wg.Done()
+			result, err := readFile(path, flag_)
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			} else {
+				fmt.Println(result)
+			}
+		}()
 	}
+	wg.Wait()
 }
