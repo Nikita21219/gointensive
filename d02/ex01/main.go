@@ -74,6 +74,21 @@ func readFile(path string, flag_ string) (string, error) {
 }
 
 func main() {
+	//file, err := os.Create("/Users/a1/Downloads/IT/golang/gointensive/d02/ex01/input3.txt")
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//defer file.Close()
+	//for i := 0; i < 100000000; i++ {
+	//	data := []byte("Hello world\n")
+	//	_, err = file.Write(data)
+	//	if err != nil {
+	//		fmt.Println(err)
+	//		return
+	//	}
+	//}
+
 	paths, flag_ := parseArgs()
 	fmt.Println()
 	var wg sync.WaitGroup

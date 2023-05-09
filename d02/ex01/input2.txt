@@ -1,4 +1,2 @@
-hello world
-my name is Nikita
-GoLang developer
-hello
+Привет!
+Я Никита!

@@ -11,18 +11,25 @@ import (
 )
 
 func parseArgs() (string, map[string]bool, string) {
-	args := os.Args[1:]
-	if len(args) < 1 {
-		log.Fatalln("Wrong number of arguments")
+	if len(os.Args[1:]) < 1 {
+		log.Fatalln("Error: Wrong number of arguments")
 	}
-	path := args[0]
-	os.Args = os.Args[1:]
+	args := os.Args[1:]
+	path := "."
+	if args[0] != "-f" && args[0] != "-sl" && args[0] != "-d" {
+		path = args[0]
+		os.Args = os.Args[1:]
+	}
 
 	slFlag := flag.Bool("sl", false, "print symlinks")
 	dirFlag := flag.Bool("d", false, "print dirs")
 	fileFlag := flag.Bool("f", false, "print files")
 	fileExtFlag := flag.String("ext", "", "use only with -f flag. print files with specified extension")
 	flag.Parse()
+
+	if flag.NArg() > 0 {
+		log.Fatalln("Error: Wrong argument")
+	}
 
 	if !(*fileFlag) && *fileExtFlag != "" {
 		log.Fatalln("-ext flag use only with -f")
@@ -32,6 +39,7 @@ func parseArgs() (string, map[string]bool, string) {
 		"sl":    *slFlag,
 		"dirs":  *dirFlag,
 		"files": *fileFlag}
+
 	return path, flags, *fileExtFlag
 }
 
