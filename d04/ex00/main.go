@@ -136,6 +136,11 @@ func main() {
 	mux.HandleFunc("/buy_candy", buyCandy)
 	err := http.ListenAndServe(":3333", mux)
 	if err != nil {
-		log.Fatalln("ERROR:", err)
+		log.Fatalln("Error:", err)
 	}
+
+	//err := http.ListenAndServeTLS(":3334", "../ex01/candy.tld/cert.pem", "../ex01/candy.tld/key.pem", mux)
+	//if err != nil {
+	//	log.Fatalln(err)
+	//}
 }
