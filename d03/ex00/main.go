@@ -2,13 +2,12 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	elastic "github.com/elastic/go-elasticsearch/v7"
-	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -39,12 +38,13 @@ func (j *JsonReader) Read(filePath string) (Schema, error) {
 
 	if !json.Valid(b) {
 		err := fmt.Errorf("Not valid JSON")
-		return r, err
+		return Schema{}, err
 	}
 	err := json.Unmarshal(b, &r)
 	if err != nil {
-		return r, err
+		return Schema{}, err
 	}
+
 	return r, nil
 }
 
@@ -88,35 +88,53 @@ func mappingIndex(indexName string, es *elastic.Client) error {
 		return err
 	}
 
-	fmt.Println(string(schemaBytes))
+	url := "http://localhost:9200/"
 
-	// Creatindg index request
-	indexReq := esapi.IndexRequest{
-		Index: indexName,
-		Body:  bytes.NewReader(schemaBytes),
+	req, err := http.NewRequest(http.MethodPut, url+"places/place/_mapping", bytes.NewBuffer(schemaBytes))
+	if err != nil {
+		return err
 	}
+	req.Header.Set("Content-Type", "application/json")
+	q := req.URL.Query()
+	q.Add("include_type_name", "true")
+	req.URL.RawQuery = q.Encode()
 
-	// Execute index request
-	resp, err := indexReq.Do(context.Background(), es)
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Handle errors
-	if resp.IsError() {
-		//fmt.Println(resp.String())
-		return fmt.Errorf("%s:\n%s", resp.Status(), resp.String())
-	} else {
-		// Deserialize the response into a map.
-		var r map[string]interface{}
+	//fmt.Println(string(schemaBytes))
 
-		if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
-			return err
-		} else {
-			fmt.Println(r)
-		}
-	}
+	//// Creating index request
+	//indexReq := esapi.IndexRequest{
+	//	Index: indexName,
+	//	Body:  bytes.NewReader(schemaBytes),
+	//}
+	//
+	//// Execute index request
+	//resp, err := indexReq.Do(context.Background(), es)
+	//if err != nil {
+	//	return err
+	//}
+	//defer resp.Body.Close()
+	//
+	//// Handle errors
+	//if resp.IsError() {
+	//	//fmt.Println(resp.String())
+	//	return fmt.Errorf("%s:\n%s", resp.Status(), resp.String())
+	//} else {
+	//	// Deserialize the response into a map.
+	//	var r map[string]interface{}
+	//
+	//	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+	//		return err
+	//	} else {
+	//		fmt.Println(r)
+	//	}
+	//}
 	return nil
 }
 
