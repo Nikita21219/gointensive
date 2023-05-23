@@ -31,6 +31,8 @@ func getValueCell(presents []Present) int {
 }
 
 func grabPresents(presents []Present, capacity int) []Present {
+	// Source code: https://habr.com/ru/articles/561120/
+
 	table := make([][][]Present, len(presents)+1)
 	for i := range table {
 		table[i] = make([][]Present, capacity+1)
@@ -41,72 +43,33 @@ func grabPresents(presents []Present, capacity int) []Present {
 			if i == 0 || j == 0 {
 				table[i][j] = nil
 			} else {
-				if getSizeCell(table[i-1][j]) > j {
-					table[i][j] = table[i-1][j]
+				prev := table[i-1][j]
+				if presents[i-1].Size > j {
+					table[i][j] = prev
 				} else {
-					prev := table[i-1][j]
-					prevSize := getSizeCell(table[i-1][j])
-					idx := getSizeCell(table[i-1][j])
-					byFormula := presents[i-1].Value + getValueCell(table[i-1][j-idx])
-					if prevSize > byFormula {
+					p := table[i-1][j-presents[i-1].Size]
+					byFormula := presents[i-1].Value + getValueCell(p)
+					if getValueCell(prev) > byFormula {
 						table[i][j] = prev
 					} else {
-						table[i][j] = append(table[i-1][j], table[i-1][j-idx]...)
+						table[i][j] = append(p, presents[i-1])
 					}
 				}
 			}
 		}
 	}
 
-	for idx := range table {
-		fmt.Println(table[idx])
-	}
-
-	return nil
-}
-
-func grabPresentsSharp(presents []Present, capacity int) []Present {
-	weights := []int{4, 1, 3}
-	values := []int{4000, 2500, 2000}
-
-	arr := make([][]int, len(weights)+1)
-	for i := range arr {
-		arr[i] = make([]int, capacity+1)
-	}
-
-	for i := 0; i <= len(weights); i++ {
-		for j := 0; j <= capacity; j++ {
-			if i == 0 || j == 0 {
-				arr[i][j] = 0
-			} else {
-				if weights[i-1] > j {
-					arr[i][j] = arr[i-1][j]
-				} else {
-					prev := arr[i-1][j]
-					byFormula := values[i-1] + arr[i-1][j-weights[i-1]]
-					if prev > byFormula {
-						arr[i][j] = prev
-					} else {
-						arr[i][j] = byFormula
-					}
-				}
-			}
-		}
-	}
-
-	for idx := range arr {
-		fmt.Println(arr[idx])
-	}
-
-	return nil
+	return table[len(presents)][capacity]
 }
 
 func main() {
-	pair1 := Present{Value: 5, Size: 1}
-	pair2 := Present{Value: 4, Size: 5}
-	pair3 := Present{Value: 3, Size: 1}
-	pair4 := Present{Value: 5, Size: 2}
-	presents := []Present{pair1, pair2, pair3, pair4}
+	pair1 := Present{Value: 4000, Size: 4}
+	pair2 := Present{Value: 2500, Size: 1}
+	pair3 := Present{Value: 2000, Size: 3}
+	presents := []Present{pair1, pair2, pair3}
 
-	grabPresents(presents, 4) // Best value = 10 (pair1, pair4)
+	res := grabPresents(presents, 4)
+	fmt.Println("Presents:", res)
+
+	fmt.Println("Max value:", getValueCell(res))
 }
