@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: hello
+      POSTGRES_USER: hello
+      POSTGRES_DB: blog
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+    ports:
+      - 5444:5432
+    restart: unless-stopped
+    container_name: golang_db
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

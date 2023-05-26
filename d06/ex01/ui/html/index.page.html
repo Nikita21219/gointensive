@@ -1,0 +1,24 @@
+{{template "base" .}}
+
+{{define "title"}}Домашняя страница{{end}}
+
+{{define "main"}}
+<h2>Последние заметки</h2>
+
+{{ range .Posts }}
+    <h1>{{ .Title }}</h1>
+    <p>{{ .Text }}</p>
+    <br>
+{{ else }}
+    <p>Пока здесь ничего нет!</p>
+{{ end }}
+
+{{ if gt .PrevPage -1 }}
+    <span><a href="/?page={{ .PrevPage }}">Пред.</a></span>
+{{ end }}
+
+{{ if gt .NextPage -1 }}
+    <span><a href="/?page={{ .NextPage }}">След.</a></span>
+{{ end }}
+
+{{end}}

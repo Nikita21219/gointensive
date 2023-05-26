@@ -70,6 +70,5 @@ func main() {
 
 	res := grabPresents(presents, 4)
 	fmt.Println("Presents:", res)
-
 	fmt.Println("Max value:", getValueCell(res))
 }
