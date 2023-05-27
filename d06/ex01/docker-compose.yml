@@ -3,12 +3,12 @@ version: '3.9'
 services:
   db:
     image: postgres
+    env_file:
+      - "admin_credentials.txt"
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
-    env_file:
-      - "./admin_credentials.txt"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 2s
@@ -18,5 +18,3 @@ services:
       - 5444:5432
     restart: unless-stopped
     container_name: golang_db
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
