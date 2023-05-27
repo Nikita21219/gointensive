@@ -27,7 +27,7 @@ func getConnectionDB() *sql.DB {
 	}
 	cred = credentials
 
-	connStr := fmt.Sprintf("user=%s password=%s dbname=%s port=5444 sslmode=disable", cred.PgUser, cred.PgPass, cred.PgDB)
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=golang_db port=5432 sslmode=disable", cred.PgUser, cred.PgPass, cred.PgDB)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatalln(err)

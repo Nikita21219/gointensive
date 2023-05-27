@@ -21,7 +21,7 @@ func main() {
 	http.Handle("/", r)
 
 	// Init file static server
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("."))))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./ui/static"))))
 
 	// Launch web server
 	err := http.ListenAndServe(":8888", r)
