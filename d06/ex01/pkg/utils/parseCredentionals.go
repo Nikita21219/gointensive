@@ -9,6 +9,7 @@ import (
 
 type Credentionals struct {
 	PgUser   string
+	PgPass   string
 	PgDB     string
 	Login    string
 	Password string
@@ -32,6 +33,8 @@ func ParseFile(filename string) (*Credentionals, error) {
 		switch splitLine[0] {
 		case "POSTGRES_USER":
 			cred.PgUser = splitLine[1]
+		case "POSTGRES_PASSWORD":
+			cred.PgPass = splitLine[1]
 		case "POSTGRES_DB":
 			cred.PgDB = splitLine[1]
 		case "LOGIN":
@@ -41,7 +44,7 @@ func ParseFile(filename string) (*Credentionals, error) {
 		}
 	}
 
-	if cred.PgUser == "" || cred.PgDB == "" || cred.Login == "" || cred.Password == "" {
+	if cred.PgUser == "" || cred.PgDB == "" || cred.Login == "" || cred.Password == "" || cred.PgPass == "" {
 		return nil, fmt.Errorf("Wrong format access file")
 	}
 

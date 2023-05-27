@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"madorsky_go.site/blog/pkg/models"
+	"madorsky_go.site/blog/pkg/utils"
 	"net/http"
 	"strconv"
 )
@@ -38,11 +40,6 @@ func renderTemplate(page string, w http.ResponseWriter, data any) {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-
 	pageParam := r.URL.Query().Get("page")
 	page, err := strconv.Atoi(pageParam)
 	if err != nil || page < 1 {
@@ -69,7 +66,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if page <= countPosts/limit {
+	if float32(page) < float32(countPosts)/float32(limit) {
 		NextPage = page + 1
 	}
 	if page > 1 {
@@ -149,4 +146,36 @@ func admin(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusMovedPermanently)
 		}
 	}
+}
+
+func article(w http.ResponseWriter, r *http.Request) {
+	data := map[string]interface{}{
+		"Error": nil,
+		"Post":  nil,
+	}
+
+	a := models.ArticleModel{DB: db}
+	id := mux.Vars(r)["id"]
+	article, err := a.GetArticle(id)
+	if err != nil {
+		if err.Error() == "Not found" {
+			data["Error"] = "Запись не найдена"
+			renderTemplate("article", w, data)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, "Internal Server Error", 500)
+		}
+		return
+	}
+
+	post := struct {
+		Title string
+		Text  template.HTML
+	}{
+		Title: article.Title,
+		Text:  template.HTML(utils.MdToHTML([]byte(article.Text))),
+	}
+	data["Post"] = post
+
+	renderTemplate("article", w, data)
 }

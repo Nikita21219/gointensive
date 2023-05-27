@@ -6,13 +6,11 @@
 <h2>Последние заметки</h2>
 
 {{ range .Posts }}
-    <h1>{{ .Title }}</h1>
-    <p>{{ .Text }}</p>
-    <br>
+    <a href="/article/{{ .Id }}">{{ .Title }}</a><br><br>
 {{ else }}
     <p>Пока здесь ничего нет!</p>
 {{ end }}
-
+<br>
 {{ if gt .PrevPage -1 }}
     <span><a href="/?page={{ .PrevPage }}">Пред.</a></span>
 {{ end }}

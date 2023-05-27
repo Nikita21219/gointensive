@@ -2,8 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"madorsky_go.site/blog/pkg/utils"
 )
+
+var cred *utils.Credentionals
 
 func createTable(db *sql.DB) {
 	_, err := db.Exec("CREATE TABLE IF NOT EXISTS articles (" +
@@ -17,8 +21,13 @@ func createTable(db *sql.DB) {
 }
 
 func getConnectionDB() *sql.DB {
-	// TODO fix access connection
-	connStr := "user=postgres password=postgres dbname=blog port=5444 sslmode=disable"
+	credentials, err := utils.ParseFile("admin_credentials.txt")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	cred = credentials
+
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s port=5444 sslmode=disable", cred.PgUser, cred.PgPass, cred.PgDB)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatalln(err)

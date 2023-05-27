@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -55,4 +56,23 @@ func (a *ArticleModel) CountPosts() (int, error) {
 		return -1, err
 	}
 	return count, nil
+}
+
+func (a *ArticleModel) GetArticle(id string) (*Article, error) {
+	query := fmt.Sprintf("SELECT title, text FROM articles WHERE id=%s", id)
+	row, err := a.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	post := new(Article)
+
+	if row.Next() {
+		err = row.Scan(&post.Title, &post.Text)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, errors.New("Not found")
+	}
+	return post, nil
 }
