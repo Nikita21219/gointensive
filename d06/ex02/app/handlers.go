@@ -1,0 +1,160 @@
+package main
+
+import (
+	"fmt"
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
+	"html/template"
+	"log"
+	"madorsky_go.site/blog/pkg/models"
+	"madorsky_go.site/blog/pkg/utils"
+	"net/http"
+	"strconv"
+)
+
+type PageData struct {
+	Posts    []models.Article
+	PrevPage int
+	NextPage int
+}
+
+func index(w http.ResponseWriter, r *http.Request) {
+	pageParam := r.URL.Query().Get("page")
+	page, err := strconv.Atoi(pageParam)
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	limit := 3
+	offset := (page - 1) * limit
+
+	a := models.ArticleModel{DB: db}
+	posts, err := a.GetThreePosts(offset)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+
+	PrevPage := -1
+	NextPage := -1
+	countPosts, err := a.CountPosts()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+
+	if float32(page) < float32(countPosts)/float32(limit) {
+		NextPage = page + 1
+	}
+	if page > 1 {
+		PrevPage = page - 1
+	}
+
+	pd := &PageData{
+		Posts:    posts,
+		PrevPage: PrevPage,
+		NextPage: NextPage,
+	}
+
+	utils.RenderTemplate("index", w, pd)
+}
+
+func getCookie(r *http.Request) *http.Cookie {
+	cookie := &http.Cookie{
+		Name:  "session",
+		Value: "",
+	}
+	for _, c := range r.Cookies() {
+		if c.Name == "session" {
+			cookie.Value = c.Value
+			break
+		}
+	}
+	return cookie
+}
+
+func login(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		utils.RenderTemplate("login", w, nil)
+	} else if r.Method == "POST" {
+		inputLogin := r.FormValue("login")
+		password := r.FormValue("password")
+		// TODO get access from file
+		if inputLogin == cred.Login && password == cred.Password {
+			sessionID := uuid.New().String()
+			cookie := &http.Cookie{
+				Name:  "session",
+				Value: sessionID,
+			}
+			http.SetCookie(w, cookie)
+			http.Redirect(w, r, "/admin", http.StatusMovedPermanently)
+		} else {
+			data := map[string]string{"Error": "Логин или пароль неверные"}
+			utils.RenderTemplate("login", w, data)
+		}
+	}
+}
+
+func permission(w http.ResponseWriter, r *http.Request) {
+	cookie := getCookie(r)
+	if cookie.Value == "" {
+		http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+	}
+}
+
+func admin(w http.ResponseWriter, r *http.Request) {
+	permission(w, r)
+	if r.Method == "GET" {
+		utils.RenderTemplate("admin", w, nil)
+	} else if r.Method == "POST" {
+		post := models.Article{Title: r.FormValue("inputTitle"), Text: r.FormValue("inputText")}
+		if post.Text == "" || post.Title == "" {
+			data := map[string]string{"Error": "Поля формы не могут быть пустыми"}
+			utils.RenderTemplate("admin", w, data)
+			return
+		}
+		a := models.ArticleModel{DB: db}
+		err := a.Insert(post)
+		if err != nil {
+			data := map[string]string{"Error": "Ошибка при создании статьи"}
+			fmt.Println("Error creating aricle:", err)
+			utils.RenderTemplate("admin", w, data)
+		} else {
+			http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		}
+	}
+}
+
+func article(w http.ResponseWriter, r *http.Request) {
+	data := map[string]interface{}{
+		"Error": nil,
+		"Post":  nil,
+	}
+
+	a := models.ArticleModel{DB: db}
+	id := mux.Vars(r)["id"]
+	article, err := a.GetArticle(id)
+	if err != nil {
+		if err.Error() == "Not found" {
+			data["Error"] = "Запись не найдена"
+			utils.RenderTemplate("article", w, data)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, "Internal Server Error", 500)
+		}
+		return
+	}
+
+	post := struct {
+		Title string
+		Text  template.HTML
+	}{
+		Title: article.Title,
+		Text:  template.HTML(utils.MdToHTML([]byte(article.Text))),
+	}
+	data["Post"] = post
+
+	utils.RenderTemplate("article", w, data)
+}
