@@ -1,0 +1,37 @@
+{{template "base" .}}
+
+{{define "title"}}Главная{{end}}
+
+{{define "main"}}
+
+{{ if .Error }}
+    <h1>{{ .Error }}</h1>
+{{ else }}
+    <h5>Total: {{ .Total }}</h5>
+
+    <ul>
+    {{ range .Places }}
+        {{ if .Name }}
+        <li>
+            <div>{{ .Name }}</div>
+            <div>{{ .Address }}</div>
+            <div>{{ .Phone }}</div>
+        </li>
+        {{ end }}
+    {{ else }}
+        <p>Пока здесь ничего нет!</p>
+    {{ end }}
+    </ul>
+
+    {{ if gt .PrevPage 0 }}
+        <a href="/?page={{ .PrevPage }}">Previous</a>
+    {{ end }}
+
+    {{ if gt .NextPage 0 }}
+        <a href="/?page={{ .NextPage }}">Next</a>
+    {{ end }}
+
+    <a href="/?page={{ .LastPage }}">Last</a>
+
+    {{end}}
+{{ end }}

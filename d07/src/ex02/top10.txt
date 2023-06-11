@@ -1,0 +1,15 @@
+goos: darwin
+goarch: arm64
+pkg: ex01
+BenchmarkMinCoins2_1-8    	 6462522	       157.8 ns/op	     280 B/op	       5 allocs/op
+BenchmarkMinCoins2_2-8    	 1795832	       649.1 ns/op	    1816 B/op	       4 allocs/op
+BenchmarkMinCoins2_3-8    	   35970	     33478 ns/op	   98328 B/op	       4 allocs/op
+BenchmarkMinCoins2_4-8    	27001028	        44.17 ns/op	      96 B/op	       2 allocs/op
+BenchmarkMinCoins2_5-8    	 1938217	       612.4 ns/op	    2040 B/op	       7 allocs/op
+BenchmarkMinCoins2_6-8    	578628129	         2.084 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMinCoins2_7-8    	    8803	    136841 ns/op	  311544 B/op	       7 allocs/op
+BenchmarkMinCoins2_8-8    	 1809076	       609.5 ns/op	    1816 B/op	       4 allocs/op
+BenchmarkMinCoins2_9-8    	     968	   1216920 ns/op	 3675401 B/op	      23 allocs/op
+BenchmarkMinCoins2_10-8   	      45	  25764252 ns/op	67934862 B/op	      15 allocs/op
+PASS
+ok  	ex01	17.894s
